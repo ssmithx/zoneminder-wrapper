@@ -1,0 +1,140 @@
+{
+  "id": "zoneminder",
+  "title": "ZoneMinder",
+  "version": "1.36.32",
+  "release-notes": "* Update upstream to v1.36.32, official release notes: https://github.com/ZoneMinder/zoneminder/releases/tag/1.36.32 \n * The Memory Remains",
+  "license": "GPL-2.0",
+  "wrapper-repo": "https://github.com/ssmithx/zoneminder-wrapper/",
+  "upstream-repo": "https://github.com/ZoneMinder/zoneminder/",
+  "support-site": "https://discord.com/invite/tHYyP9k66q/",
+  "marketing-site": "https://www.zoneminder.com/",
+  "donation-url": "https://mempool.space/address/143XJVxDQ1c1HF4vixuCZAqG6LDhSBQFwU",
+  "build": [
+    "make"
+  ],
+  "description": {
+    "short": "Open Source Video Surveillance Software",
+    "long": "ZoneMinder is a free, open source Closed-circuit television software application developed for Linux which supports IP, USB and Analog cameras. All data is stored in an encrypted vault on your Embassy.\n"
+  },
+  "assets": {
+    "license": "LICENSE",
+    "icon": "icon.png",
+    "instructions": "instructions.md"
+  },
+  "main": {
+    "type": "docker",
+    "image": "main",
+    "entrypoint": "/usr/local/bin/docker_entrypoint.sh",
+    "args": [],
+    "mounts": {
+      "main": "/data"
+    },
+    "io-format": "yaml"
+  },
+  "health-checks": {
+    "alive": {
+      "name": "Web UI",
+      "success-message": "Ready to visit in a web browser",
+      "type": "script"
+    }
+  },
+  "config": {
+    "get": {
+      "type": "script"
+    },
+    "set": {
+      "type": "script"
+    }
+  },
+  "properties": {
+    "type": "script"
+  },
+  "dependencies": {},
+  "volumes": {
+    "main": {
+      "type": "data"
+    }
+  },
+  "alerts": {},
+  "interfaces": {
+    "main": {
+      "name": "Web Interface/ZoneMinder Protocol",
+      "description": "Main user interface for interacting with ZoneMinder in a web browser.",
+      "tor-config": {
+        "port-mapping": {
+          "80": "80",
+          "3012": "3012"
+        }
+      },
+      "lan-config": {
+        "443": {
+          "ssl": true,
+          "internal": 80
+        },
+        "3012": {
+          "ssl": false,
+          "internal": 3012
+        }
+      },
+      "ui": true,
+      "protocols": [
+        "tcp",
+        "http"
+      ]
+    }
+  },
+  "backup": {
+    "create": {
+      "type": "docker",
+      "image": "compat",
+      "system": true,
+      "entrypoint": "compat",
+      "args": [
+        "duplicity",
+        "create",
+        "/mnt/backup",
+        "/data"
+      ],
+      "mounts": {
+        "BACKUP": "/mnt/backup",
+        "main": "/data"
+      },
+      "io-format": "yaml"
+    },
+    "restore": {
+      "type": "docker",
+      "image": "compat",
+      "system": true,
+      "entrypoint": "compat",
+      "args": [
+        "duplicity",
+        "restore",
+        "/mnt/backup",
+        "/data"
+      ],
+      "mounts": {
+        "BACKUP": "/mnt/backup",
+        "main": "/data"
+      },
+      "io-format": "yaml"
+    }
+  },
+  "migrations": {
+    "from": {
+      "*": {
+        "type": "script",
+        "args": [
+          "from"
+        ]
+      }
+    },
+    "to": {
+      "*": {
+        "type": "script",
+        "args": [
+          "to"
+        ]
+      }
+    }
+  }
+}

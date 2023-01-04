@@ -1,0 +1,8 @@
+image.tar
+zoneminder.s9pk
+instructions.md
+scripts/*.js
+scripts/generated/manifest.ts
+.vscode/
+docker-images
+LICENSE
